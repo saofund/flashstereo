@@ -115,24 +115,48 @@ python examples/single_pair_demo.py \
     --out   disp_color.png
 ```
 
-## 📦 Pre-built INT8 weights
+## 📦 Pre-built INT8 weights (HuggingFace)
 
-We host a Jetson AGX Orin / TensorRT 10.3 build of the INT8
-`feature_runner` engine on HuggingFace, calibrated on 16 public
-[Middlebury 2014 Stereo](https://vision.middlebury.edu/stereo/data/scenes2014/) pairs:
+> 🤗 **https://huggingface.co/saofund/flashstereo-int8-orin**
 
-> 🤗 **`https://huggingface.co/saofund/flashstereo-int8-orin`** *(replace with actual URL once published)*
+A Jetson AGX Orin / TensorRT 10.3 build of the INT8 `feature_runner`
+engine + its portable calibration cache, calibrated on 16 public
+[Middlebury 2014 Stereo](https://vision.middlebury.edu/stereo/data/scenes2014/) pairs.
+
+### ⚠️ Hardware / software compatibility for the pre-built engine
+
+TensorRT engines are **serialized binaries** and are NOT portable. The
+pre-built `feature_runner_int8.engine` loads **only** on:
+
+| Requirement | Value |
+|---|---|
+| GPU | **Jetson AGX Orin** (Ampere, SM87) |
+| JetPack | **6.0** |
+| TensorRT | **10.3** |
+| CUDA | **12.6** |
+| Input shape | **480 × 640** |
+
+For **any other configuration** (Thor SM110, RTX 4090/5090, Orin on
+JetPack 6.1+ with TRT 10.4+, different input resolution, …), the engine
+file will fail to deserialize. Use the rebuild recipe below — the
+**`.calib` file** in the HF release **is** portable and can be reused to
+skip the 5-minute INT8 calibration step on any target.
 
 ```bash
 pip install huggingface_hub
+
+# (a) Matching Orin/TRT 10.3 — drop-in usable
 huggingface-cli download saofund/flashstereo-int8-orin \
     engines/feature_runner_int8.engine \
     --local-dir artifacts/
-```
 
-⚠️ **TensorRT engines are not portable** across GPU arch / TRT version /
-CUDA version. If your target differs from Orin SM87 + TRT 10.3, rebuild
-locally using the recipe below.
+# (b) Any other hardware/TRT version — grab the portable .calib instead
+huggingface-cli download saofund/flashstereo-int8-orin \
+    calib_cache/feature_runner_int8.engine.calib \
+    --local-dir artifacts/
+# then rebuild the engine locally (see "Rebuilding INT8 engines" below),
+# pointing --cache at the downloaded .calib to skip recalibration.
+```
 
 The matching `post_runner_int8.engine` is **not** pre-published — it
 takes ~45 min of GPU time to build but is trivial to regenerate from
