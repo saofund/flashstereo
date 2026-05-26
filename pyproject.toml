@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flashstereo"
+version = "0.1.0"
+description = "Realtime stereo depth on Jetson Orin — 2.7x faster than the stock TensorRT pipeline, with bit-identical FP16 output."
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.10"
+authors = [
+    { name = "FlashStereo Contributors" },
+]
+keywords = [
+    "stereo",
+    "depth",
+    "tensorrt",
+    "jetson",
+    "orin",
+    "foundationstereo",
+    "realtime",
+]
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+    "Topic :: Scientific/Engineering :: Image Processing",
+]
+dependencies = [
+    "numpy>=1.22",
+    "opencv-python>=4.5",
+    # tensorrt and pycuda are not pulled from PyPI on Jetson — install
+    # them from the JetPack apt repo (python3-libnvinfer / python3-pycuda).
+    # On desktop CUDA hosts, install matching wheels from NVIDIA.
+]
+
+[project.optional-dependencies]
+build = [
+    # Extras needed for the INT8 build scripts (calibration data download)
+    "requests",
+]
+
+[project.urls]
+Repository = "https://github.com/saofund/flashstereo"
+
+[tool.setuptools.packages.find]
+include = ["flashstereo*"]
+exclude = ["scripts*", "examples*", "tests*", "assets*", "docs*", "artifacts*"]

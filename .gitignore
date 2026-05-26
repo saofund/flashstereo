@@ -1,0 +1,41 @@
+# Build artifacts and large binaries
+artifacts/
+*.engine
+*.calib
+*.onnx
+*.pt
+*.pth
+*.pkl
+
+# Calibration intermediates
+*.npz
+assets/calib_pairs/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+build/
+dist/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# Editors / OS
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+
+# Logs and tmp
+*.log
+logs/
+tmp/
